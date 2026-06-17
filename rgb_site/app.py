@@ -8,7 +8,7 @@ from rgb import RGB
 
 app = Flask(__name__)
 
-ITERATIONS = 2800
+ITERATIONS = 5000
 FRAMESKIP = 5
 N_TILES_X = 32
 N_TILES_Y = 32
@@ -47,13 +47,14 @@ def generate_simulation_frames(
 
     frame_shape = (N_TILES_X, N_TILES_Y, 3)
     start_frame = 255 * np.random.rand(*(frame_shape))
-    result = np.empty((ITERATIONS+1, *frame_shape), float)
-    result[0] = start_frame
-    for i in range(ITERATIONS):
-        result[i+1] = Q.next_frame(result[i])
 
-    # speedup by skipping frames
-    result = result[::int(FRAMESKIP)]
+    n_frames = ITERATIONS // FRAMESKIP
+    result = np.empty((n_frames, *frame_shape), float)
+    result[0] = current_frame = start_frame
+    for i in range(1, ITERATIONS):
+        current_frame = Q.next_frame(current_frame)
+        if i % FRAMESKIP == 0:
+            result[i // FRAMESKIP] = current_frame
 
     # cap values in result at 255
     mask = result <= 255
