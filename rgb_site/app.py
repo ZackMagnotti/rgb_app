@@ -7,6 +7,13 @@ from rgb import RGB
 
 app = Flask(__name__)
 
+ITERATIONS = 2000
+FRAMESKIP = 5
+N_TILES_X = 32
+N_TILES_Y = 32
+IMAGE_H = 256
+IMAGE_W = 256
+
 DEFAULT_GROWTH_RATE = .03
 DEFAULT_PREDATION_RATE = .001
 DEFAULT_PREDATION_EFFICIENCY = .125
@@ -28,22 +35,17 @@ def generate_simulation_frames(
     if sigma is None:
         sigma = DEFAULT_SIGMA
 
-    iterations = 2000
-    speedup = 5
-    size = 32
-    image_size = 256
-
     Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
 
-    frame_shape = (size, size, 3)
+    frame_shape = (N_TILES_X, N_TILES_Y, 3)
     start_frame = 255 * np.random.rand(*(frame_shape))
-    result = np.empty((iterations+1, *frame_shape), float)
+    result = np.empty((ITERATIONS+1, *frame_shape), float)
     result[0] = start_frame
-    for i in range(iterations):
+    for i in range(ITERATIONS):
         result[i+1] = Q.next_frame(result[i])
 
     # speedup by skipping frames
-    result = result[::int(speedup)]
+    result = result[::int(FRAMESKIP)]
 
     # cap values in result at 255
     mask = result <= 255
@@ -52,12 +54,11 @@ def generate_simulation_frames(
 
     image_frame_data_array = result.astype(np.uint8)
 
-    # resize if needed
-    if size != image_size:
-        img_h = img_w = image_size
-        tile_len_h = img_h // result.shape[1]
-        tile_len_w = img_w // result.shape[2]
+    tile_len_h = IMAGE_H // N_TILES_X
+    tile_len_w = IMAGE_W // N_TILES_Y
+    if tile_len_h > 1:
         image_frame_data_array = np.repeat(image_frame_data_array, tile_len_h, 1)
+    if tile_len_w > 1:
         image_frame_data_array = np.repeat(image_frame_data_array, tile_len_w, 2)
 
     return [
