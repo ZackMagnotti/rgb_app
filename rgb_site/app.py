@@ -1,6 +1,7 @@
 from flask import Flask, render_template, send_file, url_for, request
 
 import numpy as np
+import matplotlib.pyplot as plt
 from io import BytesIO
 from PIL import Image
 from rgb import RGB
@@ -73,7 +74,7 @@ def generate_simulation_frames(
         for f in image_frame_data_array
     ]
 
-def get_bytes_from_frames(frames):
+def gif_bytes(frames):
     buffer = BytesIO()
     frames[0].save(
         buffer,
@@ -86,16 +87,67 @@ def get_bytes_from_frames(frames):
     buffer.seek(0)
     return buffer
 
+def generate_single_pixel_graph(
+        growth_rate=None,
+        predation_rate=None,
+        predation_efficiency=None,
+        **kwargs,
+    ):
+
+    if growth_rate is None:
+        growth_rate = DEFAULT_GROWTH_RATE
+    if predation_rate is None:
+        predation_rate = DEFAULT_PREDATION_RATE
+    if predation_efficiency is None:
+        predation_efficiency = DEFAULT_PREDATION_EFFICIENCY
+
+    sigma = DEFAULT_SIGMA
+
+    Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
+
+    start_pixel = np.random.rand(3)
+    result = np.empty((ITERATIONS+1, 3), float)
+    result[0] = start_pixel
+    for i in range(ITERATIONS):
+        result[i+1] = Q.next_pixel(result[i])
+
+    fix, ax = plt.subplots()
+    N = np.arange(len(result))
+    r_result = result[:, 0]
+    g_result = result[:, 1]
+    b_result = result[:, 2]
+    ax.plot(N, r_result, label='red', color='red')
+    ax.plot(N, g_result, label='green', color='green')
+    ax.plot(N, b_result, label='blue', color='blue')
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    plt.close()
+    buffer.seek(0)
+    return buffer
+
 @app.route("/get_simulator_gif")
 def get_simulator_gif():
     kwargs = dict(request.args)
     kwargs = {k: float(v) for k, v in kwargs.items() if v}
     frames = generate_simulation_frames(**kwargs)
     return send_file(
-        get_bytes_from_frames(frames),
+        gif_bytes(frames),
         mimetype='image/gif',
         as_attachment=False,
         download_name='rgb_simulation.gif'
+    )
+
+@app.route("/get_single_pixel_graph")
+def get_single_pixel_graph():
+    kwargs = dict(request.args)
+    kwargs = {k: float(v) for k, v in kwargs.items() if v}
+    graph_png_bytes = generate_single_pixel_graph(**kwargs)
+    return send_file(
+        graph_png_bytes,
+        mimetype='image/png',
+        as_attachment=False,
+        download_name='single_pixel_graph.png'
     )
 
 @app.route("/simulator_page", methods=['GET', 'POST'])
@@ -106,6 +158,15 @@ def simulator_page():
         form_data = dict(request.form)
         show_image = True
     return render_template('simulator_page.html', show_image=show_image, **form_data)
+
+@app.route("/single_pixel_page", methods=['GET', 'POST'])
+def single_pixel_page():
+    form_data = {**DEFAULT_SIMULATOR_KWARGS}
+    show_image = False
+    if request.method == 'POST':
+        form_data = dict(request.form)
+        show_image = True
+    return render_template('single_pixel_page.html', show_image=show_image, **form_data)
 
 @app.route("/index")
 @app.route("/")

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Single Pixel</h1>
+{% if show_image %}
+<img src="{{ url_for('get_single_pixel_graph', growth_rate=growth_rate, predation_rate=predation_rate, predation_efficiency=predation_efficiency) }}" alt="">
+{% endif %}
+<form method="POST" action="{{ url_for('single_pixel_page') }}">
+    <label>Growth Rate: <input type="text" name="growth_rate" value="{{ growth_rate }}"></label><br>
+    <label>Predation Rate: <input type="text" name="predation_rate" value="{{ predation_rate }}"></label><br>
+    <label>Predation Efficiency: <input type="text" name="predation_efficiency" value="{{ predation_efficiency }}"></label><br>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
