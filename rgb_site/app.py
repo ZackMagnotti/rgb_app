@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_file, url_for
+from flask import Flask, render_template, send_file, url_for, request
 
 import numpy as np
 from io import BytesIO
@@ -7,16 +7,31 @@ from rgb import RGB
 
 app = Flask(__name__)
 
-def generate_simulation_frames():
+DEFAULT_GROWTH_RATE = .03
+DEFAULT_PREDATION_RATE = .001
+DEFAULT_PREDATION_EFFICIENCY = .125
+DEFAULT_SIGMA = .75
+
+def generate_simulation_frames(
+        growth_rate=None,
+        predation_rate=None,
+        predation_efficiency=None,
+        sigma=None,
+    ):
+
+    if growth_rate is None:
+        growth_rate = DEFAULT_GROWTH_RATE
+    if predation_rate is None:
+        predation_rate = DEFAULT_PREDATION_RATE
+    if predation_efficiency is None:
+        predation_efficiency = DEFAULT_PREDATION_EFFICIENCY
+    if sigma is None:
+        sigma = DEFAULT_SIGMA
 
     iterations = 2000
     speedup = 5
     size = 32
     image_size = 256
-    growth_rate = .03
-    predation_rate = .001
-    predation_efficiency = .125
-    sigma = .75
 
     Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
 
@@ -51,7 +66,6 @@ def generate_simulation_frames():
     ]
 
 def get_bytes_from_frames(frames):
-    frames = generate_simulation_frames()
     buffer = BytesIO()
     frames[0].save(
         buffer,
@@ -66,8 +80,9 @@ def get_bytes_from_frames(frames):
 
 @app.route("/get_simulator_gif")
 def get_simulator_gif():
-    frames = generate_simulation_frames()
-    sim_gif = get_bytes_from_frames(frames)
+    kwargs = dict(request.args)
+    kwargs = {k: float(v) for k, v in kwargs.items() if v}
+    frames = generate_simulation_frames(**kwargs)
     return send_file(
         get_bytes_from_frames(frames),
         mimetype='image/gif',
@@ -75,9 +90,14 @@ def get_simulator_gif():
         download_name='rbg_simulation.gif'
     )
 
-@app.route("/simulator_page")
+@app.route("/simulator_page", methods=['GET', 'POST'])
 def simulator_page():
-    return render_template('simulator_page.html')
+    form_data = {}
+    show_image = False
+    if request.method == 'POST':
+        form_data = dict(request.form)
+        show_image = True
+    return render_template('simulator_page.html', show_image=show_image, **form_data)
 
 @app.route("/index")
 @app.route("/")

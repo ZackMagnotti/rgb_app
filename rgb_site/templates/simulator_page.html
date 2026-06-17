@@ -2,6 +2,15 @@
 <html>
 <body>
 <h1>Simulator</h1>
-<img src="{{ url_for('get_simulator_gif') }}">
+{% if show_image %}
+<img src="{{ url_for('get_simulator_gif', growth_rate=growth_rate, predation_rate=predation_rate, predation_efficiency=predation_efficiency, sigma=sigma) }}" alt="">
+{% endif %}
+<form method="POST" action="{{ url_for('simulator_page') }}">
+    <label>Growth Rate: <input type="text" name="growth_rate"></label><br>
+    <label>Predation Rate: <input type="text" name="predation_rate"></label><br>
+    <label>Predation Efficiency: <input type="text" name="predation_efficiency"></label><br>
+    <label>Sigma: <input type="text" name="sigma"></label><br>
+    <button type="submit">Submit</button>
+</form>
 </body>
 </html>
