@@ -7,7 +7,7 @@ from rgb import RGB
 
 app = Flask(__name__)
 
-ITERATIONS = 2000
+ITERATIONS = 2800
 FRAMESKIP = 5
 N_TILES_X = 32
 N_TILES_Y = 32
@@ -95,7 +95,7 @@ def get_simulator_gif():
         get_bytes_from_frames(frames),
         mimetype='image/gif',
         as_attachment=False,
-        download_name='rbg_simulation.gif'
+        download_name='rgb_simulation.gif'
     )
 
 @app.route("/simulator_page", methods=['GET', 'POST'])
