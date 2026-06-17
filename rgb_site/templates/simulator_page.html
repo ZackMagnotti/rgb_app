@@ -6,10 +6,10 @@
 <img src="{{ url_for('get_simulator_gif', growth_rate=growth_rate, predation_rate=predation_rate, predation_efficiency=predation_efficiency, sigma=sigma) }}" alt="">
 {% endif %}
 <form method="POST" action="{{ url_for('simulator_page') }}">
-    <label>Growth Rate: <input type="text" name="growth_rate"></label><br>
-    <label>Predation Rate: <input type="text" name="predation_rate"></label><br>
-    <label>Predation Efficiency: <input type="text" name="predation_efficiency"></label><br>
-    <label>Sigma: <input type="text" name="sigma"></label><br>
+    <label>Growth Rate: <input type="text" name="growth_rate" value="{{ growth_rate }}"></label><br>
+    <label>Predation Rate: <input type="text" name="predation_rate" value="{{ predation_rate }}"></label><br>
+    <label>Predation Efficiency: <input type="text" name="predation_efficiency" value="{{ predation_efficiency }}"></label><br>
+    <label>Sigma: <input type="text" name="sigma" value="{{ sigma }}"></label><br>
     <button type="submit">Submit</button>
 </form>
 </body>

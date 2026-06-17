@@ -19,6 +19,13 @@ DEFAULT_PREDATION_RATE = .001
 DEFAULT_PREDATION_EFFICIENCY = .125
 DEFAULT_SIGMA = .75
 
+DEFAULT_SIMULATOR_KWARGS = {
+    "growth_rate": DEFAULT_GROWTH_RATE,
+    "predation_rate": DEFAULT_PREDATION_RATE,
+    "predation_efficiency": DEFAULT_PREDATION_EFFICIENCY,
+    "sigma": DEFAULT_SIGMA,
+}
+
 def generate_simulation_frames(
         growth_rate=None,
         predation_rate=None,
@@ -93,7 +100,7 @@ def get_simulator_gif():
 
 @app.route("/simulator_page", methods=['GET', 'POST'])
 def simulator_page():
-    form_data = {}
+    form_data = {**DEFAULT_SIMULATOR_KWARGS}
     show_image = False
     if request.method == 'POST':
         form_data = dict(request.form)
