@@ -63,7 +63,7 @@ class RGBField(RGB):
 
     def next_frame(self, frame):
         pk_frame = ndimage.gaussian_filter(
-            frame, sigma=self._sigma, axes=(0, 1)
+            frame, sigma=self._sigma, axes=(0, 1), mode='reflect'
         )
         new_frame = frame + self.pp_diff(frame, pk_frame)
         # filtering negative values prevents crashes
