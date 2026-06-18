@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
+<h4><a href="/">Home</a></h4>
 <h1>Single Pixel</h1>
 {% if show_image %}
 <img src="{{ url_for('get_single_pixel_graph', growth_rate=growth_rate, predation_rate=predation_rate, predation_efficiency=predation_efficiency) }}" alt="">

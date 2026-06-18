@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
+<h4><a href="/">Home</a></h4>
 <h1>Simulator</h1>
 {% if show_image %}
 <img src="{{ url_for('get_simulator_gif', growth_rate=growth_rate, predation_rate=predation_rate, predation_efficiency=predation_efficiency, sigma=sigma) }}" alt="">
