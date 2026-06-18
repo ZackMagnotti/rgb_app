@@ -3,10 +3,25 @@
     <h4><a href="/">Home</a></h4>
     <h1>Simulate From Image</h1>
     {% if show_image %}
-    <img src="data:image/{{ img_type }};base64,{{ b64_image }}" height="{{ image_height }}" width="{{ image_width }}>
+    <img src="{{ url_for('get_simulator_gif', **img_kwargs) }}" height="{{ image_height }}" width="{{ image_width }}">
     {% endif %}
     <form method="POST" action="{{ url_for('simulate_from_image_upload') }}" enctype="multipart/form-data">
-        <input type="file" name="uploaded_image" />
-        <input type="submit" value="Upload" />
+        {% if show_image %}
+        <label><img src="data:image/jpeg;base64,{{ thumbnail }}">{{ display_fname }}</label><br>
+        <input type="hidden" name="display_fname" value="{{ display_fname }}">
+        <input type="hidden" name="upload_fname" value="{{ upload_fname }}">
+        {% endif %}
+        <input type="file" name="uploaded_image" value="uploaded_image" /><br>
+        <label>Growth Rate: <input type="text" name="growth_rate" value="{{ growth_rate }}"></label><br>
+        <label>Predation Rate: <input type="text" name="predation_rate" value="{{ predation_rate }}"></label><br>
+        <label>Predation Efficiency: <input type="text" name="predation_efficiency" value="{{ predation_efficiency }}"></label><br>
+        <label>Sigma: <input type="text" name="sigma" value="{{ sigma }}"></label><br>
+        <label>Iterations: <input type="text" name="iterations" value="{{ iterations }}"></label><br>
+        <label>Speedup Constant: <input type="text" name="frameskip" value="{{ frameskip }}"></label><br>
+        <label>Vertical Tiles: <input type="text" name="x_tiles" value="{{ x_tiles }}"></label><br>
+        <label>Horizontal Tiles: <input type="text" name="y_tiles" value="{{ y_tiles }}"></label><br>
+        <label>Height: <input type="text" name="image_height" value="{{ image_height }}"></label><br>
+        <label>Width: <input type="text" name="image_width" value="{{ image_width }}"></label><br>
+        <button type="submit">Submit</button>
     </form>
 </body>
