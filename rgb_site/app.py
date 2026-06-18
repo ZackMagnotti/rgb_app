@@ -8,12 +8,12 @@ from rgb import RGB
 
 app = Flask(__name__)
 
-ITERATIONS = 5000
+ITERATIONS = 2500
 FRAMESKIP = 5
 N_TILES_X = 32
 N_TILES_Y = 32
-IMAGE_H = 256
-IMAGE_W = 256
+IMAGE_H = 128
+IMAGE_W = 128
 
 DEFAULT_GROWTH_RATE = .03
 DEFAULT_PREDATION_RATE = .001
@@ -106,7 +106,7 @@ def generate_single_pixel_graph(
 
     Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
 
-    start_pixel = np.random.rand(3)
+    start_pixel = 255 * np.random.rand(3)
     result = np.empty((ITERATIONS+1, 3), float)
     result[0] = start_pixel
     for i in range(ITERATIONS):
