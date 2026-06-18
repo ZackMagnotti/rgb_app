@@ -42,6 +42,7 @@ DEFAULT_KWARGS = {
 
 
 def generate_simulation_frames(
+        start_image = None,
         growth_rate = DEFAULT_GROWTH_RATE,
         predation_rate = DEFAULT_PREDATION_RATE,
         predation_efficiency = DEFAULT_PREDATION_EFFICIENCY,
@@ -61,9 +62,14 @@ def generate_simulation_frames(
         sigma=sigma,
     )
 
-    n_frames = iterations // frameskip
     frame_shape = (x_tiles, y_tiles, 3)
-    start_frame = 255 * np.random.rand(*(frame_shape))
+    if start_image is None:
+        start_frame = 255 * np.random.rand(*(frame_shape))
+    else:
+        start_image = start_image.resize(frame_shape[:2])
+        start_frame = np.asarray(start_image)
+
+    n_frames = iterations // frameskip
     result = np.empty((n_frames, *frame_shape), float)
     result[0] = current_frame = start_frame
     for i in range(1, iterations):
@@ -144,6 +150,31 @@ def clean_kwargs(d):
         for k, v in d.items()
         if v
     }
+
+
+@app.route("/simulate_from_image_upload", methods = ['GET', 'POST'])
+def simulate_from_image_upload():
+    if request.method == 'GET':
+        return render_template('simulate_from_image_upload.html')
+    if request.method == 'POST':
+        f = request.files['uploaded_image']
+        img = Image.open(request.files['uploaded_image'])
+        sim_kwargs = {
+            "x_tiles": 128,
+            "y_tiles": 128,
+            "tile_size": 1,
+            "image_height": 128,
+            "image_width": 128,
+        }
+        sim_frames = generate_simulation_frames(img, **sim_kwargs)
+        gif_file = gif_bytes(sim_frames)
+        b64_gif = b64encode(gif_file.getvalue()).decode('utf-8')
+        return render_template(
+            'simulate_from_image_upload.html',
+            show_image=True,
+            b64_image=b64_gif,
+            img_type='gif'
+        )
 
 
 @app.route("/upload_and_display_image", methods = ['GET', 'POST'])
