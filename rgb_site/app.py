@@ -3,6 +3,7 @@ from flask import Flask, render_template, send_file, url_for, request
 import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
+from base64 import b64encode
 from PIL import Image
 from rgb import RGB, RGBField
 
@@ -138,6 +139,22 @@ def clean_kwargs(d):
         for k, v in d.items()
         if v
     }
+
+
+@app.route("/upload_and_display_image", methods = ['GET', 'POST'])
+def upload_and_display_image():
+    if request.method == 'GET':
+        return render_template('upload_and_display_image.html')
+    if request.method == 'POST':
+        f = request.files['uploaded_image']
+        img_type = f.filename.split('.')[-1]
+        b64_image = b64encode(f.read()).decode('utf-8')
+        return render_template(
+            'upload_and_display_image.html',
+            show_image=True,
+            b64_image=b64_image,
+            img_type=img_type
+        )
 
 
 @app.route("/get_simulator_gif")

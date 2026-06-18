@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<body>
+    <h4><a href="/">Home</a></h4>
+    <h1>Upload Image</h1>
+    {% if show_image %}
+    <img src="data:image/{{ img_type }};base64,{{ b64_image }}">
+    {% endif %}
+    <form method="POST" action="{{ url_for('upload_and_display_image') }}" enctype="multipart/form-data">
+        <input type="file" name="uploaded_image" />
+        <input type="submit" value="Upload" />
+    </form>
+</body>
