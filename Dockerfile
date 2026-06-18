@@ -1,7 +1,6 @@
-FROM flask
+FROM python
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-WORKDIR /root
 CMD [ \
 	"flask", \
 	"--app", \
