@@ -1,2 +1,2 @@
-from .rgb import RGB
+from .rgb import RGB, RGBField
 

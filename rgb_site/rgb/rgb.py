@@ -2,6 +2,7 @@ import numpy as np
 from scipy import ndimage
 
 class RGB:
+
     def __init__(
         self,
         growth_rate,
@@ -55,7 +56,6 @@ class RGBField(RGB):
     ):
         self._sigma = sigma
         super().__init__(
-            self,
             growth_rate,
             predation_rate,
             predation_efficiency
