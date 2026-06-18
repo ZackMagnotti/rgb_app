@@ -103,6 +103,7 @@ def generate_single_pixel_graph(
         predation_rate = DEFAULT_PREDATION_RATE,
         predation_efficiency = DEFAULT_PREDATION_EFFICIENCY,
         iterations = DEFAULT_ITERATIONS,
+        **kwargs
     ):
 
     Q = RGB(
