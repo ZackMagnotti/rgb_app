@@ -6,8 +6,7 @@ class RGB:
         self,
         growth_rate,
         predation_rate,
-        predation_efficiency,
-        sigma
+        predation_efficiency
     ):
         _a = growth_rate
         _g = -growth_rate / 255
@@ -22,7 +21,6 @@ class RGB:
             [_b, _g, _d],
             [_d, _b, _g]
         ])
-        self._sigma = sigma
 
     def pp_diff(self, p, p_k):
         """
@@ -45,6 +43,23 @@ class RGB:
 
     def next_pixel(self, p):
         return p + self.diff(p)
+
+class RGBField(RGB):
+
+    def __init__(
+        self,
+        growth_rate,
+        predation_rate,
+        predation_efficiency,
+        sigma
+    ):
+        self._sigma = sigma
+        super().__init__(
+            self,
+            growth_rate,
+            predation_rate,
+            predation_efficiency
+        )
 
     def next_frame(self, frame):
         pk_frame = ndimage.gaussian_filter(

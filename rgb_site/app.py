@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 from PIL import Image
-from rgb import RGB
+from rgb import RGB, RGBField
 
 app = Flask(__name__)
 
@@ -43,7 +43,12 @@ def generate_simulation_frames(
     if sigma is None:
         sigma = DEFAULT_SIGMA
 
-    Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
+    Q = RGBField(
+        growth_rate=growth_rate,
+        predation_rate=predation_rate,
+        predation_efficiency=predation_efficiency,
+        sigma=sigma,
+    )
 
     frame_shape = (N_TILES_X, N_TILES_Y, 3)
     start_frame = 255 * np.random.rand(*(frame_shape))
@@ -104,7 +109,11 @@ def generate_single_pixel_graph(
 
     sigma = DEFAULT_SIGMA
 
-    Q = RGB(growth_rate, predation_rate, predation_efficiency, sigma)
+    Q = RGB(
+        growth_rate=growth_rate,
+        predation_rate=predation_rate,
+        predation_efficiency=predation_efficiency,
+    )
 
     start_pixel = 255 * np.random.rand(3)
     result = np.empty((ITERATIONS+1, 3), float)
