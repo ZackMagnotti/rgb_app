@@ -29,6 +29,7 @@ DEFAULT_SIGMA = 1
 # Integer Fields
 DEFAULT_ITERATIONS = 2500
 DEFAULT_FRAMESKIP = 5
+DEFAULT_START_FREEZE_FRAMES = 50
 DEFAULT_X_TILES = 32
 DEFAULT_Y_TILES = 32
 DEFAULT_TILE_SIZE = 1
@@ -42,6 +43,7 @@ DEFAULT_KWARGS = {
     "sigma": DEFAULT_SIGMA,
     "iterations": DEFAULT_ITERATIONS,
     "frameskip": DEFAULT_FRAMESKIP,
+    "start_freeze_frames": DEFAULT_START_FREEZE_FRAMES,
     "x_tiles": DEFAULT_X_TILES,
     "y_tiles": DEFAULT_Y_TILES,
     "tile_size": DEFAULT_TILE_SIZE,
@@ -101,6 +103,7 @@ def generate_simulation_frames(
         sigma = DEFAULT_SIGMA,
         iterations = DEFAULT_ITERATIONS,
         frameskip = DEFAULT_FRAMESKIP,
+        start_freeze_frames = DEFAULT_START_FREEZE_FRAMES,
         x_tiles = DEFAULT_X_TILES,
         y_tiles = DEFAULT_Y_TILES,
         tile_size = DEFAULT_TILE_SIZE,
@@ -118,8 +121,7 @@ def generate_simulation_frames(
     if start_image is None:
         start_frame = 255 * np.random.rand(*(frame_shape))
     else:
-        start_image = start_image.resize(frame_shape[:2])
-        start_frame = np.asarray(start_image)
+        start_frame = np.asarray(start_image.resize(frame_shape[:2]))
 
     n_frames = iterations // frameskip
     result = np.empty((n_frames, *frame_shape), float)
@@ -140,10 +142,15 @@ def generate_simulation_frames(
         image_frame_data_array = np.repeat(image_frame_data_array, tile_size, 1)
         image_frame_data_array = np.repeat(image_frame_data_array, tile_size, 2)
 
-    return [
+    image_frames = [
         Image.fromarray(f)
         for f in image_frame_data_array
     ]
+
+    # Linger on first frame to allow the viewer to
+    # fully appreciate the image which is about
+    # to be obliterated before their very eyes.
+    return start_freeze_frames * image_frames[:1] + image_frames[1:]
 
 
 def gif_bytes(frames):
@@ -216,7 +223,7 @@ def image_upload_simulator():
                 thumbnail = get_thumbnail_b64(img)
 
         # If no new image, but previous image exists
-        elif (upload_fname := request.form.get('upload_fname', None)) \
+        elif (upload_fname := form_data.get('upload_fname', None)) \
         and upload_fname in os.listdir(app.config['UPLOAD']):
             img_path = os.path.join(app.config['UPLOAD'], upload_fname)
             with Image.open(img_path) as img:
