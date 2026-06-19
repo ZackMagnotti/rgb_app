@@ -6,7 +6,6 @@ from flask import (
     request,
 )
 
-
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,6 +55,9 @@ def generate_single_pixel_graph(
         predation_rate = DEFAULT_PREDATION_RATE,
         predation_efficiency = DEFAULT_PREDATION_EFFICIENCY,
         iterations = DEFAULT_ITERATIONS,
+        red_start = None,
+        green_start = None,
+        blue_start = None,
         **kwargs
     ):
 
@@ -66,6 +68,10 @@ def generate_single_pixel_graph(
     )
 
     start_pixel = 255 * np.random.rand(3)
+    for i, val in enumerate((red_start, green_start, blue_start)):
+        if val is not None:
+            start_pixel[i] = float(val)
+
     result = np.empty((iterations, 3), float)
     result[0] = start_pixel
     for i in range(1, iterations):
@@ -155,7 +161,8 @@ def gif_bytes(frames):
 
 
 def clean_kwargs(d):
-    return {
+    d = {**d}
+    return d | {
         k: type(DEFAULT_KWARGS[k])(v)
         for k, v in d.items()
         if v and k in DEFAULT_KWARGS
