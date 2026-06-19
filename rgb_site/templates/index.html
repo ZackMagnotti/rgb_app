@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h1>RGB site</h1>
-<list>
-    <li><a href="{{ url_for('simulate_from_image_upload') }}">
-        Simulate from Image Upload
+<h1>RGB Site</h1>
+<ul><head><h2>Simulators</h2></head>
+    <li><a href="{{ url_for('image_upload_simulator') }}">
+        From Image Upload
     </a></li>
-    <li><a href="{{ url_for('simulator_page') }}">
-        Simulator
+    <li><a href="{{ url_for('random_simulator') }}">
+        From Random Conditions
     </a></li>
-    <li><a href="{{ url_for('single_pixel_page') }}">
-        Single Pixel Testing'
+    <li><a href="{{ url_for('single_pixel_simulator') }}">
+        Single Pixel
     </a></li>
-</list>
+</ul>
 </body>
 </html>

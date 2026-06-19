@@ -186,8 +186,8 @@ def get_simulator_gif():
     )
 
 
-@app.route("/simulate_from_image_upload", methods = ['GET', 'POST'])
-def simulate_from_image_upload():
+@app.route("/image_upload_simulator", methods = ['GET', 'POST'])
+def image_upload_simulator():
 
     form_data = {**DEFAULT_KWARGS}
 
@@ -220,25 +220,25 @@ def simulate_from_image_upload():
             thumbnail = None
 
         return render_template(
-            'simulate_from_image_upload.html',
+            'image_upload_simulator.html',
             show_image=show_image,
             thumbnail=thumbnail,
             img_kwargs=form_data,
             **form_data,
         )
 
-    return render_template('simulate_from_image_upload.html', **form_data)
+    return render_template('image_upload_simulator.html', **form_data)
 
 
-@app.route("/simulator_page", methods=['GET', 'POST'])
-def simulator_page():
+@app.route("/random_simulator", methods=['GET', 'POST'])
+def random_simulator():
     form_data = {**DEFAULT_KWARGS}
     show_image = False
     if request.method == 'POST':
         form_data |= {k: v for k, v in request.form.items() if v}
         show_image = True
     return render_template(
-        'simulator_page.html',
+        'random_simulator.html',
         show_image=show_image,
         img_kwargs=form_data,
         **form_data
@@ -257,15 +257,15 @@ def get_single_pixel_graph():
     )
 
 
-@app.route("/single_pixel_page", methods=['GET', 'POST'])
-def single_pixel_page():
+@app.route("/single_pixel_simulator", methods=['GET', 'POST'])
+def single_pixel_simulator():
     form_data = {**DEFAULT_KWARGS}
     show_image = False
     if request.method == 'POST':
         form_data |= {k: v for k, v in request.form.items() if v}
         show_image = True
     return render_template(
-        'single_pixel_page.html',
+        'single_pixel_simulator.html',
         show_image=show_image,
         img_kwargs=form_data,
         **form_data

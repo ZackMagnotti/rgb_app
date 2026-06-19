@@ -2,11 +2,11 @@
 <html>
 <body>
     <h4><a href="/">Home</a></h4>
-    <h1>Simulator</h1>
+    <h1>Simulate From Random Conditions</h1>
     {% if show_image %}
     <img src="{{ url_for('get_simulator_gif', **img_kwargs) }}" height="{{ image_height }}" width="{{ image_width }}">
     {% endif %}
-    <form method="POST" action="{{ url_for('simulator_page') }}">
+    <form method="POST" action="{{ url_for('random_simulator') }}">
         <label>Growth Rate: <input type="text" name="growth_rate" value="{{ growth_rate }}"></label><br>
         <label>Predation Rate: <input type="text" name="predation_rate" value="{{ predation_rate }}"></label><br>
         <label>Predation Efficiency: <input type="text" name="predation_efficiency" value="{{ predation_efficiency }}"></label><br>

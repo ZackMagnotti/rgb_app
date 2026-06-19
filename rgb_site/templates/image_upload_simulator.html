@@ -5,7 +5,7 @@
     {% if show_image %}
     <img src="{{ url_for('get_simulator_gif', **img_kwargs) }}" height="{{ image_height }}" width="{{ image_width }}">
     {% endif %}
-    <form method="POST" action="{{ url_for('simulate_from_image_upload') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ url_for('image_upload_simulator') }}" enctype="multipart/form-data">
         {% if show_image %}
         <label><img src="data:image/jpeg;base64,{{ thumbnail }}">{{ display_fname }}</label><br>
         <input type="hidden" name="display_fname" value="{{ display_fname }}">
