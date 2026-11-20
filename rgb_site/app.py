@@ -32,9 +32,9 @@ DEFAULT_FRAMESKIP = 5
 DEFAULT_START_FREEZE_FRAMES = 50
 DEFAULT_X_TILES = 32
 DEFAULT_Y_TILES = 32
-DEFAULT_TILE_SIZE = 1
-DEFAULT_IMAGE_HEIGHT = 400
-DEFAULT_IMAGE_WIDTH = 400
+DEFAULT_TILE_SIZE = 4
+DEFAULT_IMAGE_HEIGHT = 512
+DEFAULT_IMAGE_WIDTH = 512
 
 DEFAULT_KWARGS = {
     "growth_rate": DEFAULT_GROWTH_RATE,
@@ -204,6 +204,7 @@ def get_simulator_gif():
 def image_upload_simulator():
 
     form_data = {**DEFAULT_KWARGS}
+    form_data['tile_size'] = 1
 
     if request.method == 'POST':
 
