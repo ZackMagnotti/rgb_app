@@ -137,3 +137,5 @@ _d = predation_rate * predation_efficiency
 ```
 `predation_efficiency` is meant to encapsulate the benefit the predator
 extracts from each "kill", which then is reinvested into population growth.
+
+It is worth noting the determinate of A: `|A| = _g^3 + _d^3 + _b^3 - (3 _g _d _b)`.
