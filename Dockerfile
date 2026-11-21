@@ -5,7 +5,7 @@ RUN mkdir upload
 CMD [ \
 	"flask", \
 	"--app", \
-	"rgb_site/app.py", \
+	"rgb_app/app.py", \
 	"run", \
 	"--with-threads", \
 	"--host=0.0.0.0" \

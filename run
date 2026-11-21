@@ -1,6 +1,3 @@
 #!/usr/bin/env bash
-
 here=$(cd `dirname $0` && pwd)
-image_name=${here##*/}
-
-docker run --rm -it -p 5000:5000 -v "$here/rgb_site:/rgb_site" $image_name
+docker run --rm -it -p 5000:5000 -v "$here/rgb_app:/rgb_app" rgb_app
