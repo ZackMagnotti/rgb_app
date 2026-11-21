@@ -41,7 +41,7 @@ or more generally the
 [**Replicator equation**](https://en.wikipedia.org/wiki/Replicator_equation).
 The math is generalized so that each species behaves as both predetor and prey in a "Rock Paper Scissors" type
 relationship - for example, "Red" predates on "Green", and is prey to "Blue".
-This is similar to the starter Pokemon type triangle.
+This is similar to the starter Pokemon type triangle of Fire, Grass, and Water.
 ```
 Rock > Scissors > Paper > Rock ...
 Fire > Grass > Water > Fire ...
@@ -74,8 +74,9 @@ dv/dt = _av + (v * A(v))
 ```
 
 In the above expression, `A(v)` represents a vector-matrix multiplication of v onto A
-identical to `np.matvec(_A, v)`,
-and `v * A(v)` represents a piecewise multiplication of two similar 3-vectors.
+(identical to `np.matvec(_A, v)`) resulting in a 3-vector,
+and `v * A(v)` represents a piecewise multiplication of two similar 3-vectors resulting
+in another 3-vector.
 
 The matrix `A` can be understood by combining the behavior of the standard logistic growth
 equations and the predator/prey model.
@@ -138,4 +139,7 @@ _d = predation_rate * predation_efficiency
 `predation_efficiency` is meant to encapsulate the benefit the predator
 extracts from each "kill", which then is reinvested into population growth.
 
-It is worth noting the determinate of A: `|A| = _g^3 + _d^3 + _b^3 - (3 _g _d _b)`.
+It is worth noting the determinate of A:
+```
+|A| = _g^3 + _d^3 + _b^3 - (3 _g _d _b)
+```
