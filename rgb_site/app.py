@@ -77,7 +77,7 @@ def generate_single_pixel_graph(
     result = np.empty((iterations, 3), float)
     result[0] = start_pixel
     for i in range(1, iterations):
-        result[i] = Q.next_pixel(result[i-1])
+        result[i] = Q.get_next(result[i-1])
 
     fix, ax = plt.subplots()
     N = np.arange(len(result))
@@ -127,7 +127,7 @@ def generate_simulation_frames(
     result = np.empty((n_frames, *frame_shape), float)
     result[0] = current_frame = start_frame
     for i in range(1, iterations):
-        current_frame = Q.next_frame(current_frame)
+        current_frame = Q.get_next_frame(current_frame)
         if i % frameskip == 0:
             result[i // frameskip] = current_frame
 

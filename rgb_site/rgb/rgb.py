@@ -9,6 +9,15 @@ class RGB:
         predation_rate,
         predation_efficiency
     ):
+        """
+        Initializes conditions for RGB simulation
+
+        growth_rate <float>: independant growth rate of a species
+        predation_rate <float>: rate at which a species will be
+            eliminated by its predator
+        predation_efficiency <float>: rate at which predation converts
+            into population growth for the predator species.
+        """
         _a = growth_rate
         _g = -growth_rate / 255
         _b = -predation_rate
@@ -23,27 +32,31 @@ class RGB:
             [_d, _b, _g]
         ])
 
-    def pp_diff(self, p, p_k):
+    def diff(self, v):
         """
-        Partial Pixel Diff
+        Calcualates dv/dt
 
-        p <np.ndarray>: pixel vector with shape (3),
+        dv/dt = _av + v * A(v)
+
+        v <np.ndarray>: vector with shape (3),
             or array of such vectors
-        p_k <np.ndarray>: pixel vector with identical shape to p
-        return: Diff of p relative to p_k
+        return dv/dt <np.ndarray> vector or array
+            of vectors with same shape as input
         """
-        return p_k * (self._a + np.matvec(self._A, p))
+        return v * (self._a + np.matvec(self._A, v))
 
-    def diff(self, p):
+    def get_next(self, v):
         """
-        p <np.ndarray>: pixel vector with shape (3),
+        Calculates next step in simulation, v + dv/dt
+
+        v <np.ndarray>: vector with shape (3),
             or array of such vectors
-        return: Diff of p
+        return v + dv/dt <np.ndarray> vector or array
+            of vectors with same shape as input
         """
-        return self.pp_diff(p, p)
-
-    def next_pixel(self, p):
-        return p + self.diff(p)
+        v_next = v + self.diff(v)
+        # filter negative values to prevent divergent behavior
+        return v_next * (v_next > 0)
 
 class RGBField(RGB):
 
@@ -54,6 +67,17 @@ class RGBField(RGB):
         predation_efficiency,
         sigma
     ):
+        """
+        Initializes conditions for RGB 2D diffusal simulation
+
+        growth_rate <float>: independant growth rate of a species
+        predation_rate <float>: rate at which a species will be
+            eliminated by its predator
+        predation_efficiency <float>: rate at which predation converts
+            into population growth for the predator species.
+        sigma <float>: sigma value to be passed to gaussian blur
+            function representing 2D diffusal.
+        """
         self._sigma = sigma
         super().__init__(
             growth_rate,
@@ -61,10 +85,25 @@ class RGBField(RGB):
             predation_efficiency
         )
 
-    def next_frame(self, frame):
-        pk_frame = ndimage.gaussian_filter(
+    def get_next_frame(self, frame):
+        """
+        Calculates next step in 2D diffusal simulation.
+        First performs a gaussian blur using self._sigma to represent
+        diffusal and interaction between cells (pixels), then calculates
+        dv/dt on each cell of the diffused frame to represent interaction
+        between species.
+
+        next_frame = current_frame + df/dt
+
+        frame <np.ndarray>: array with size (n, m, 3) representing a color image.
+            The rgb values of each pixel will be treated as the populations of the
+            three "species" for the RGB population simulation.
+        return next_frame <np.ndarray>: array with same size as input representing
+            the next frame in the simulation
+        """
+        diffused_frame = ndimage.gaussian_filter(
             frame, sigma=self._sigma, axes=(0, 1), mode='reflect'
         )
-        new_frame = frame + self.pp_diff(frame, pk_frame)
-        # filtering negative values prevents crashes
+        new_frame = frame + self.diff(diffused_frame)
+        # filter negative values to prevent divergent behavior
         return new_frame * (new_frame > 0)
