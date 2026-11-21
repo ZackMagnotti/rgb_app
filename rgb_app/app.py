@@ -249,6 +249,24 @@ def image_upload_simulator():
 def random_simulator():
     form_data = {**DEFAULT_KWARGS}
     show_image = False
+    # When there is no user-input starting image, resolution
+    # is less important. Random noise also takes longer to
+    # develop into visible patterns. Therefore, for the random
+    # condition start, reduce default resolution, extend 
+    # simulation time, and increase speedup constant.
+    # Also, set default "start freeze frames" to 1,
+    # as there is no real initial image to admire.
+    tiles = 32
+    iterations = 25000
+    frameskip = 10
+    freeze_frames = 1
+    form_data |= {
+        'x_tiles': tiles,
+        'y_tiles': tiles,
+        'iterations': iterations,
+        'frameskip': frameskip,
+        'start_freeze_frames': freeze_frames,
+    }
     if request.method == 'POST':
         form_data |= {k: v for k, v in request.form.items() if v}
         show_image = True
