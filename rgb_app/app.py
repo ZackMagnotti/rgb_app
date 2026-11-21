@@ -204,6 +204,8 @@ def get_simulator_gif():
 def image_upload_simulator():
 
     form_data = {**DEFAULT_KWARGS}
+    # Set tile size to 1 because tiles here represend
+    # actual pixels
     form_data['tile_size'] = 1
 
     if request.method == 'POST':
