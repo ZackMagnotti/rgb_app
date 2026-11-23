@@ -31,24 +31,24 @@ class RGB:
 
     def diff(self, v):
         """
-        Calcualates dv/dt
+        Calcualates dv
 
-        dv/dt = _av + v * A(v)
+        dv = v * (a + A(v))
 
         v <np.ndarray>: vector with shape (3),
             or array of such vectors
-        return dv/dt <np.ndarray> vector or array
+        return dv <np.ndarray> vector or array
             of vectors with same shape as input
         """
         return v * (self._a + np.matvec(self._A, v))
 
     def get_next(self, v):
         """
-        Calculates next step in simulation, v + dv/dt
+        Calculates next step in simulation, v + dv
 
         v <np.ndarray>: vector with shape (3),
             or array of such vectors
-        return v + dv/dt <np.ndarray> vector or array
+        return v + dv <np.ndarray> vector or array
             of vectors with same shape as input
         """
         v_next = v + self.diff(v)
@@ -85,12 +85,11 @@ class RGBField(RGB):
     def get_next_frame(self, frame):
         """
         Calculates next step in 2D diffusal simulation.
-        First performs a gaussian blur using self._sigma to represent
-        diffusal and interaction between cells (pixels), then calculates
-        dv/dt on each cell of the diffused frame to represent interaction
-        between species.
+        First performs a gaussian blur to represent diffusal, meaning 
+        interaction/propogation between cells (pixels), then calculates
+        dv on each cell of the diffused frame.
 
-        next_frame = current_frame + df/dt
+        next_frame = current_frame + df
 
         frame <np.ndarray>: array with size (n, m, 3) representing a color image.
             The rgb values of each pixel will be treated as the populations of the
@@ -101,6 +100,6 @@ class RGBField(RGB):
         diffused_frame = ndimage.gaussian_filter(
             frame, sigma=self._sigma, axes=(0, 1), mode='reflect'
         )
-        new_frame = frame + self.diff(diffused_frame)
+        next_frame = frame + self.diff(diffused_frame)
         # filter negative values to prevent divergent behavior
-        return new_frame * (new_frame > 0)
+        return next_frame * (next_frame > 0)

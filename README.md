@@ -143,6 +143,9 @@ A = [
     [b, g, d],
     [d, b, g]
 ]
+# let dt = 1
+dv = av + v * A(v)
+dv = v * (a + A(v))
 ```
 Note: the negative signs are moved into
 the variable definitions to simplify the
