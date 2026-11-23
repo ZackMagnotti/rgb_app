@@ -1,5 +1,5 @@
 import numpy as np
-from scipy import ndimage
+from scipy.ndimage import gaussian_filter
 
 class RGB:
 
@@ -97,7 +97,7 @@ class RGBField(RGB):
         return next_frame <np.ndarray>: array with same size as input representing
             the next frame in the simulation
         """
-        diffused_frame = ndimage.gaussian_filter(
+        diffused_frame = gaussian_filter(
             frame, sigma=self._sigma, axes=(0, 1), mode='reflect'
         )
         next_frame = frame + self.diff(diffused_frame)
