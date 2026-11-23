@@ -1,12 +1,12 @@
-# RGB Rock Paper Scissors Logistic Population Growth Sim
+# RGB Logistic Growth Simulator
 This project simulates the population growth of hypothetical system of three populations
-which grow according to the logistic population growth model, with the addition of a
+which grow somewhat according to the logistic population model, but with the addition of a
 rock-paper-scissors predation relationship, wherein Red predates on Green, Green predates
-on Blue, and Blue predates on Red - somewhat inspired by the Fire Grass Water pokemon types.
+on Blue, and Blue predates on Red - somewhat inspired by the Fire-Grass-Water pokemon type triangle.
 
-The general case considers a grid of cells (pixels) in which the surrounding cells in a local area
-will affect eachother. The "single pixel" case considers a single cell with no interaction with
-surrounding populations.
+The general case considers a grid of cells (pixels) in which populations will diffuse and affect
+surrounding cells in a local area.
+The "Single Pixel" case considers a single cell with no outside interaction.
 
 ## How to run
 This project is designed to run inside a Docker container within a MacOS or Linux environment.
@@ -14,7 +14,7 @@ Two scripts, `build` and `run` are responsible for compiling and executing the d
 `build` is necessary typically only once, to construct the Docker image. `run` is then responsible
 for spinning up the application for use.
 
-From this directory you can run these scripts like so:
+You can run the scripts from this directory in a terminal window with the following commands.
 ```
 # execute build script
 bash build
@@ -24,7 +24,7 @@ bash run
 ```
 
 While running, the application will occupy the terminal window and can be accessible in-browser
-at the address `localhost:5000`.
+locally on port 5000 by typing [`localhost:5000`](http://localhost:5000) into the address bar.
 
 The application can then be terminated with the key combo `CTRL+C` in the active terminal window.
 Most code changes will require a restart to take effect. It isn't necessary to rebuild unless the
@@ -54,28 +54,28 @@ R > G > B > R ...
 dx/dt = rx(1 - x/K)
 ```
 
-### Predetor/Prey Model
+### Predator/Prey Model
 ```
 # x: prey, y: predators
-# _a: prey growth rate
-# _b: predation rate
-# _g: predator death rate (overpopulation, related to capacity)
-# _d: effect of predation on predator growth
-dx/dt = _ax - _bxy
-dy/dt = -_gy + _dxy
+# a: prey growth rate
+# b: predation rate
+# g: predator death rate (overpopulation, related to capacity)
+# d: effect of predation on predator growth
+dx/dt = ax - bxy
+dy/dt = -gy + dxy
 ```
 
 ### RGB Model
 ```
 # v: 3-vector representing the population of the three species
-# _a: growth rate
+# a: scalar, individual growth rate for each species (same for all three)
 # A: Matrix encapsulating effects of predation and population capacity
-dv/dt = _av + (v * A(v))
+dv/dt = av + (v * A(v))
 ```
 
 In the above expression, `A(v)` represents a vector-matrix multiplication of v onto A
-(identical to `np.matvec(_A, v)`) resulting in a 3-vector,
-and `v * A(v)` represents a piecewise multiplication of two similar 3-vectors resulting
+(identical to `np.matvec(A, v)`) resulting in a 3-vector,
+and `v * (...)` represents a piecewise multiplication of two similar 3-vectors resulting
 in another 3-vector.
 
 The matrix `A` can be understood by combining the behavior of the standard logistic growth
@@ -85,61 +85,72 @@ Let `v = (x, y, z)`, where the predation cycle follows the pattern `x > y > z > 
 
 Standard Logistic growth
 ```
-dx/dt = _ax(1 - x/K) ...
+dx/dt = ax(1 - x/K) ...
 ```
 
-Let `_g = -_a/K` to encapsulate death rate as it relates to population capacity
+Let `g = a/K` to encapsulate death rate as it relates to population capacity
+into one variable.
 ```
-dx/dt = x(_a - _gx) ...
-```
-
-Add a term called `_d` to represent population growth due to `x` predating on `y`.
-```
-dx/dt = x(_a - _gx) + _dxy ...
-dx/dt = x(_a - _gx + _dy) ...
+dx/dt = x(a - ax/K) ...
+dx/dt = x(a - gx) ...
 ```
 
-Add a term called `_b` to represent death rate due to predation from `z`.
+Let `d` represent the population growth due to predation from `x` onto `y`.
 ```
-dx/dt = x(_a - _gx + _dy) - _bxz
-dx/dt = x(_a - _gx + _dy - _bz)
+dx/dt = x(a - gx) + dxy ...
+dx/dt = x(a - gx + dy) ...
+```
+
+Let `b` represent the death rate due to predation from `z` onto `x`.
+```
+dx/dt = x(a - gx + dy) - bxz
+dx/dt = x(a - gx + dy - bz)
 ```
 
 The full system of equations:
 ```
-dx/dt = x(_a - _gx + _dy - _bz)
-dy/dt = y(_a - _bx - _gy + _dz)
-dz/dt = z(_a + _dx - _by - _gz)
+dx/dt = x(a - gx + dy - bz)
+dy/dt = y(a - bx - gy + dz)
+dz/dt = z(a + dx - by - gz)
 
-dx/dt = _ax + x(_gx + _dy - _bz)
-dy/dt = _ay + y(_bx - _gy + _dz)
-dz/dt = _az + z(_dx - _by - _gz)
+dx/dt = ax + x(gx + dy - bz)
+dy/dt = ay + y(bx - gy + dz)
+dz/dt = az + z(dx - by - gz)
 ```
 
 We can now finally condense this system using vector-matrix operations.
-(Note: _g and _b can be defined as negative values to simplify the negative
-out of the definition for A)
+Define a matrix, `A`, to encapsulate the effects of overpopulation and
+the predator/prey relationships into one variable.
 ```
 v = (x, y, z)
 A = [
-    [_g, _d, _b],
-    [_b, _g, _d],
-    [_d, _b, _g]
+    [-g,  d, -b],
+    [-b, -g,  d],
+    [ d, -b, -g]
 ]
-dv/dt = _av + v * A(v)
+dv/dt = av + v * A(v)
 ```
 
-In the project code, the above parameters are defined as such:
+The below snippet shows how these parameters are defined in the
+project code.
 ```
-_a = growth_rate
-_g = -growth_rate / 255
-_b = -predation_rate
-_d = predation_rate * predation_efficiency
+a = growth_rate
+g = -growth_rate / 255
+b = -predation_rate
+d = predation_rate * predation_efficiency
+A = [
+    [g, d, b],
+    [b, g, d],
+    [d, b, g]
+]
 ```
+Note: the negative signs are moved into
+the variable definitions to simplify the
+declaration of the matrix iteslf.
 `predation_efficiency` is meant to encapsulate the benefit the predator
 extracts from each "kill", which then is reinvested into population growth.
 
-It is worth noting the determinate of A:
+It is worth noting the Determinant of A:
 ```
-|A| = _g^3 + _d^3 + _b^3 - (3 _g _d _b)
+|A| = g^3 + d^3 + b^3 - 3gdb
 ```

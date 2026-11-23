@@ -18,18 +18,15 @@ class RGB:
         predation_efficiency <float>: rate at which predation converts
             into population growth for the predator species.
         """
-        _a = growth_rate
-        _g = -growth_rate / 255
-        _b = -predation_rate
-        _d = predation_rate * predation_efficiency
-        self._a = _a
-        self._g = _g
-        self._b = _b
-        self._d = _d
+        a = growth_rate
+        g = -growth_rate / 255
+        b = -predation_rate
+        d = predation_rate * predation_efficiency
+        self._a = a
         self._A = np.array([
-            [_g, _d, _b],
-            [_b, _g, _d],
-            [_d, _b, _g]
+            [g, d, b],
+            [b, g, d],
+            [d, b, g]
         ])
 
     def diff(self, v):
