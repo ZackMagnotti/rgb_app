@@ -121,7 +121,7 @@ def generate_simulation_frames(
     if start_image is None:
         start_frame = 255 * np.random.rand(*(frame_shape))
     else:
-        start_frame = np.asarray(start_image.resize(frame_shape[:2]))
+        start_frame = np.asarray(start_image.resize((y_tiles, x_tiles)))
 
     n_frames = iterations // frameskip
     result = np.empty((n_frames, *frame_shape), float)
